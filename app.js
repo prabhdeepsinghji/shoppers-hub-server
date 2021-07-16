@@ -1,36 +1,36 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const mongoose = require('mongoose')
-const cors = require('cors')
-
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv/config');
 const authJwt = require('./helpers/jwt');
-const errorHandler = require('./helpers/error-handler')
+const errorHandler = require('./helpers/error-handler');
 
-app.use(cors())
+
+app.use(cors());
 app.options('*', cors())
 
 //middleware
-app.use(bodyParser.json()) //acts as middleware to specify the type of data recieved
-app.use(morgan('tiny')) //acts as middleware to get logs for api requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('tiny'));
 app.use(authJwt());
-app.use('/public/uploads', express.static(__dirname + '/public/uploads'))
-app.use(errorHandler)
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
+app.use(errorHandler);
+
 //Routes
-const categoriesRoutes = require('./routers/categories')
-const productsRoutes = require('./routers/products')
-const usersRoutes = require('./routers/users')
-const ordersRoutes = require('./routers/orders');
+const categoriesRoutes = require('./routes/categories');
+const productsRoutes = require('./routes/products');
+const usersRoutes = require('./routes/users');
+const ordersRoutes = require('./routes/orders');
 
 const api = process.env.API_URL;
 
-app.use(`${api}/categories`, categoriesRoutes)
-app.use(`${api}/products`, productsRoutes)
-app.use(`${api}/users`, usersRoutes)
-app.use(`${api}/orders`, ordersRoutes)
-
+app.use(`${api}/categories`, categoriesRoutes);
+app.use(`${api}/products`, productsRoutes);
+app.use(`${api}/users`, usersRoutes);
+app.use(`${api}/orders`, ordersRoutes);
 
 //Database
 mongoose.connect(process.env.CONNECTION_STRING, {
@@ -39,15 +39,16 @@ mongoose.connect(process.env.CONNECTION_STRING, {
     dbName: 'shop-database'
 })
 .then(()=>{
-    console.log('Database connection is ready...')
+    console.log('Database Connection is ready...')
 })
-.catch((err)=>{
-    console.log(err)
+.catch((err)=> {
+    console.log(err);
 })
 
-// //Server
+//Server
 // app.listen(3000, ()=>{
-//     console.log('server is live http://localhost:3000')
+
+//     console.log('server is running http://localhost:3000');
 // })
 
 //Production
